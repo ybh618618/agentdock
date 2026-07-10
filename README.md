@@ -93,11 +93,25 @@ Windows `.wsl` builds require Podman and use the compiled Linux executable:
 packaging/windows/build-wsl.sh 0.1.0 amd64 dist/wsl
 ```
 
+GitHub Actions runs the same checks for every push and pull request. Every pushed commit also
+builds the four amd64 distribution formats and stores them as a 14-day Actions artifact. To
+publish a GitHub Release, update `package.json` to the intended version and push the matching
+version tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The tag workflow verifies that the tag and `package.json` versions match, then publishes the
+`.deb`, `.rpm`, `.pkg.tar.zst`, `.wsl`, and SHA-256 checksum files to GitHub Releases.
+
 See [`packaging/DISTRIBUTION.md`](packaging/DISTRIBUTION.md) for package layout, first-run behavior, WSL registration, reset semantics, and CI requirements.
 
 ## Current release boundaries
 
-- A project license, maintainer metadata, and signing identity must be chosen before publishing packages.
+- CI packages currently use `Proprietary` metadata and the repository owner's GitHub noreply address;
+  choose an open-source license and signing identity before a production public release if desired.
 - Linux packages can omit the Ubuntu image. A `.wsl` file is itself a compressed Linux root filesystem by Microsoft's format definition, so the Windows artifact necessarily includes the minimal Ubuntu 26.04 rootfs.
 - The packaged app currently uses a fixed loopback port. The distribution design documents endpoint discovery and one-time browser tokens as release hardening work.
 - Google authentication for Antigravity CLI is completed interactively on first launch.

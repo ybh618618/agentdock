@@ -18,8 +18,18 @@ COPY packaging/linux/runtime/bunx-wrapper /usr/local/bin/bunx
 COPY packaging/linux/runtime/configure-apt-mirror /usr/lib/agentdock/configure-apt-mirror
 COPY packaging/linux/runtime/ /usr/lib/agentdock/runtime/
 
-RUN useradd --create-home --uid 1000 --user-group \
-      --shell /usr/lib/agentdock/wsl-app-shell agentdock \
+RUN existing_user="$(getent passwd 1000 | cut -d: -f1)" \
+    && if [ -n "$existing_user" ] && [ "$existing_user" != agentdock ]; then \
+      existing_group="$(id -gn "$existing_user")"; \
+      usermod --login agentdock --home /home/agentdock --move-home \
+        --shell /usr/lib/agentdock/wsl-app-shell "$existing_user"; \
+      if [ "$existing_group" != agentdock ]; then \
+        groupmod --new-name agentdock "$existing_group"; \
+      fi; \
+    elif [ -z "$existing_user" ]; then \
+      useradd --create-home --uid 1000 --user-group \
+        --shell /usr/lib/agentdock/wsl-app-shell agentdock; \
+    fi \
     && printf '%s\n' 'agentdock ALL=(ALL:ALL) NOPASSWD: ALL' \
       > /etc/sudoers.d/90-agentdock \
     && chmod 0440 /etc/sudoers.d/90-agentdock \
@@ -49,6 +59,5 @@ RUN useradd --create-home --uid 1000 --user-group \
       systemd-tmpfiles-setup-dev-early.service \
       systemd-tmpfiles-setup-dev.service \
       tmp.mount \
-    && rm -f /etc/resolv.conf \
     && truncate -s 0 /etc/machine-id \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/* /tmp/* /var/tmp/*
