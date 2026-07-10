@@ -59,6 +59,5 @@ RUN existing_user="$(getent passwd 1000 | cut -d: -f1)" \
       systemd-tmpfiles-setup-dev-early.service \
       systemd-tmpfiles-setup-dev.service \
       tmp.mount \
-    && rm -f /etc/resolv.conf \
     && truncate -s 0 /etc/machine-id \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/* /tmp/* /var/tmp/*
