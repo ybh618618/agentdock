@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.agentdock/
+.impeccable/live/runtime/
+apps/dashboard/playwright-report/
+apps/dashboard/test-results/
+packaging/out/

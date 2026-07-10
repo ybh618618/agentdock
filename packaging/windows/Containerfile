@@ -1,0 +1,54 @@
+FROM docker.io/library/ubuntu:26.04
+
+ARG TARGETARCH=amd64
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN /usr/bin/apt update \
+    && /usr/bin/apt upgrade -y \
+    && /usr/bin/apt install -y --no-install-recommends \
+      ca-certificates curl git sudo procps util-linux systemd systemd-sysv \
+      unzip xz-utils build-essential \
+    && /usr/bin/apt clean
+
+COPY packaging/windows/rootfs/ /
+COPY dist/linux-${TARGETARCH}/agentdock /usr/lib/agentdock/agentdock
+COPY packaging/linux/runtime/apt-wrapper /usr/local/bin/apt
+COPY packaging/linux/runtime/bun-wrapper /usr/local/bin/bun
+COPY packaging/linux/runtime/bunx-wrapper /usr/local/bin/bunx
+COPY packaging/linux/runtime/configure-apt-mirror /usr/lib/agentdock/configure-apt-mirror
+COPY packaging/linux/runtime/ /usr/lib/agentdock/runtime/
+
+RUN useradd --create-home --uid 1000 --user-group \
+      --shell /usr/lib/agentdock/wsl-app-shell agentdock \
+    && printf '%s\n' 'agentdock ALL=(ALL:ALL) NOPASSWD: ALL' \
+      > /etc/sudoers.d/90-agentdock \
+    && chmod 0440 /etc/sudoers.d/90-agentdock \
+    && chmod 0755 \
+      /usr/lib/agentdock/agentdock \
+      /usr/lib/agentdock/apt-update \
+      /usr/lib/agentdock/configure-apt-mirror \
+      /usr/lib/agentdock/oobe \
+      /usr/lib/agentdock/wsl-app-shell \
+      /usr/lib/agentdock/runtime/install-agent \
+      /usr/local/bin/apt \
+      /usr/local/bin/bun \
+      /usr/local/bin/bunx \
+    && ln -sf /usr/lib/agentdock/agentdock /usr/bin/agentdock \
+    && mkdir -p /etc/systemd/system/multi-user.target.wants \
+    && ln -sf /usr/lib/systemd/system/agentdock.service \
+      /etc/systemd/system/multi-user.target.wants/agentdock.service \
+    && ln -sf /usr/lib/systemd/system/agentdock-apt-update.service \
+      /etc/systemd/system/multi-user.target.wants/agentdock-apt-update.service \
+    && systemctl mask \
+      systemd-resolved.service \
+      systemd-networkd.service \
+      NetworkManager.service \
+      systemd-tmpfiles-setup.service \
+      systemd-tmpfiles-clean.service \
+      systemd-tmpfiles-clean.timer \
+      systemd-tmpfiles-setup-dev-early.service \
+      systemd-tmpfiles-setup-dev.service \
+      tmp.mount \
+    && rm -f /etc/resolv.conf \
+    && truncate -s 0 /etc/machine-id \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/* /tmp/* /var/tmp/*

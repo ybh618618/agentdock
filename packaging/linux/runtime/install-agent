@@ -1,0 +1,43 @@
+#!/bin/sh
+
+set -eu
+
+if [ "$#" -ne 1 ]; then
+  echo "usage: install-agent codex|claude|antigravity|opencode" >&2
+  exit 64
+fi
+
+case "$1" in
+  codex)
+    curl -fsSL https://chatgpt.com/codex/install.sh | sh
+    ;;
+  claude)
+    key=/etc/apt/keyrings/claude-code.asc
+    repo=/etc/apt/sources.list.d/claude-code.list
+    sudo -n install -d -m 0755 /etc/apt/keyrings
+    tmp="$(mktemp)"
+    trap 'rm -f "$tmp"' EXIT
+    curl -fsSL https://downloads.claude.ai/keys/claude-code.asc -o "$tmp"
+    fingerprint="$(gpg --show-keys --with-colons "$tmp" | awk -F: '$1 == "fpr" { print $10; exit }')"
+    if [ "$fingerprint" != "31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE" ]; then
+      echo "Claude Code repository signing key fingerprint mismatch" >&2
+      exit 65
+    fi
+    sudo -n install -m 0644 "$tmp" "$key"
+    printf '%s\n' \
+      'deb [signed-by=/etc/apt/keyrings/claude-code.asc] https://downloads.claude.ai/claude-code/apt/stable stable main' |
+      sudo -n tee "$repo" >/dev/null
+    apt update
+    apt install claude-code
+    ;;
+  antigravity)
+    curl -fsSL https://antigravity.google/cli/install.sh | bash
+    ;;
+  opencode)
+    bun add --global opencode-ai
+    ;;
+  *)
+    echo "unsupported Agent: $1" >&2
+    exit 64
+    ;;
+esac

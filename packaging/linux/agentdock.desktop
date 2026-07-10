@@ -1,0 +1,22 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=AgentDock
+GenericName=Agent Runtime
+Comment=Run coding agents in one local workspace
+TryExec=agentdock
+Exec=agentdock open --platform=linux
+Icon=agentdock
+Terminal=false
+Categories=Development;IDE;
+Keywords=Agent;Terminal;Development;AI;
+StartupNotify=false
+Actions=NewProject;Settings;
+
+[Desktop Action NewProject]
+Name=New Project
+Exec=agentdock open --platform=linux --route=/projects/new
+
+[Desktop Action Settings]
+Name=Settings
+Exec=agentdock open --platform=linux --route=/settings

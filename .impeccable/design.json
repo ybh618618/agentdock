@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-10T00:00:00Z",
+  "title": "Design System: AgentDock",
+  "extensions": {
+    "colorMeta": {
+      "signal-olive-light": {
+        "role": "primary",
+        "displayName": "Controlled Olive Signal",
+        "canonical": "oklch(0.43 0.105 120)",
+        "tonalRamp": [
+          "oklch(0.15 0.04 120)",
+          "oklch(0.25 0.07 120)",
+          "oklch(0.35 0.095 120)",
+          "oklch(0.43 0.105 120)",
+          "oklch(0.55 0.11 120)",
+          "oklch(0.68 0.1 120)",
+          "oklch(0.82 0.07 120)",
+          "oklch(0.95 0.025 120)"
+        ]
+      },
+      "canvas-light": {
+        "role": "neutral",
+        "displayName": "Literal White Canvas",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.25 0 0)",
+          "oklch(0.38 0 0)",
+          "oklch(0.52 0 0)",
+          "oklch(0.66 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.9 0 0)",
+          "oklch(1 0 0)"
+        ]
+      },
+      "canvas-dark": {
+        "role": "neutral",
+        "displayName": "Near-black Canvas",
+        "canonical": "oklch(0.075 0 0)",
+        "tonalRamp": [
+          "oklch(0.075 0 0)",
+          "oklch(0.15 0 0)",
+          "oklch(0.28 0 0)",
+          "oklch(0.42 0 0)",
+          "oklch(0.56 0 0)",
+          "oklch(0.7 0 0)",
+          "oklch(0.84 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Home and onboarding milestones only." },
+      "body": {
+        "displayName": "Interface",
+        "purpose": "Navigation, controls, body copy, and metadata."
+      },
+      "mono": {
+        "displayName": "Executable Content",
+        "purpose": "Terminal output, paths, and commands only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "modal-ambient",
+        "value": "0 20px 56px oklch(0.04 0 0 / 0.28)",
+        "purpose": "Native modal focus only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "150ms",
+        "purpose": "Hover, focus, and compact control state."
+      },
+      {
+        "name": "structure",
+        "value": "210ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Sidebar, modal, and responsive structural transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "560px" },
+      { "name": "sidebar-collapse", "value": "800px" },
+      { "name": "reflow", "value": "980px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Achromatic principal action with compact developer-tool density.",
+      "html": "<button class=\"ds-button-primary\">Start session</button>",
+      "css": ".ds-button-primary { min-height: 36px; padding: 7px 13px; border: 0; border-radius: var(--radius-sm, 6px); background: var(--button-bg, oklch(0.14 0.006 120)); color: var(--button-ink, oklch(1 0 0)); font: 610 13px/1.5 'Inter Variable', sans-serif; transition: background 150ms, transform 150ms; } .ds-button-primary:hover { background: var(--button-hover, oklch(0.23 0.01 120)); } .ds-button-primary:focus-visible { outline: 2px solid var(--primary, oklch(0.43 0.105 120)); outline-offset: 2px; } .ds-button-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Border-led secondary action for toolbars and settings.",
+      "html": "<button class=\"ds-button-secondary\">Configure</button>",
+      "css": ".ds-button-secondary { min-height: 36px; padding: 7px 13px; border: 1px solid var(--line, oklch(0.89 0.007 120)); border-radius: var(--radius-sm, 6px); background: var(--surface-raised, oklch(1 0 0)); color: var(--ink, oklch(0.18 0.012 120)); font: 610 13px/1.5 'Inter Variable', sans-serif; } .ds-button-secondary:hover { background: var(--surface-hover, oklch(0.957 0.006 120)); } .ds-button-secondary:focus-visible { outline: 2px solid var(--primary, oklch(0.43 0.105 120)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Explicitly labeled neutral field with olive focus state.",
+      "html": "<label class=\"ds-field\"><span>Project name</span><input value=\"agentdock\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 7px; color: var(--ink, oklch(0.18 0.012 120)); font: 630 11px/1.4 'Inter Variable', sans-serif; } .ds-field input { min-height: 40px; padding: 8px 11px; border: 1px solid var(--line, oklch(0.89 0.007 120)); border-radius: var(--radius-sm, 6px); background: var(--bg, oklch(1 0 0)); color: inherit; font: 400 14px/1.5 'Inter Variable', sans-serif; } .ds-field input:focus { border-color: var(--primary, oklch(0.43 0.105 120)); outline: 2px solid var(--primary, oklch(0.43 0.105 120)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Agent Chip",
+      "kind": "chip",
+      "description": "Quiet identity token for enabled Agents.",
+      "html": "<span class=\"ds-agent-chip\">Codex</span>",
+      "css": ".ds-agent-chip { display: inline-flex; padding: 4px 8px; border: 1px solid var(--line, oklch(0.89 0.007 120)); border-radius: 999px; color: var(--muted, oklch(0.46 0.014 120)); font: 600 10px/1.4 'Inter Variable', sans-serif; }"
+    },
+    {
+      "name": "Navigation Row",
+      "kind": "nav",
+      "description": "Familiar sidebar row with tonal active state.",
+      "html": "<button class=\"ds-nav-row\" aria-current=\"page\">Projects</button>",
+      "css": ".ds-nav-row { width: 100%; min-height: 36px; padding: 0 10px; border: 0; border-radius: var(--radius-sm, 6px); background: var(--surface-strong, oklch(0.944 0.006 120)); color: var(--ink, oklch(0.18 0.012 120)); text-align: left; font: 610 13px/1.5 'Inter Variable', sans-serif; } .ds-nav-row:hover { background: var(--surface-hover, oklch(0.957 0.006 120)); } .ds-nav-row:focus-visible { outline: 2px solid var(--primary, oklch(0.43 0.105 120)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Terminal Panel",
+      "kind": "custom",
+      "refersTo": "terminal",
+      "description": "Primary executable work surface with visible connection state.",
+      "html": "<section class=\"ds-terminal\"><header><span class=\"ds-status\"></span><strong>Codex</strong><small>connected</small></header><pre>$ codex --dangerously-bypass-approvals-and-sandbox</pre></section>",
+      "css": ".ds-terminal { overflow: hidden; border: 1px solid var(--line, oklch(0.89 0.007 120)); border-radius: var(--radius-md, 9px); background: oklch(0.075 0 0); color: oklch(0.93 0.006 120); font-family: 'JetBrains Mono Variable', monospace; } .ds-terminal header { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 12px; border-bottom: 1px solid oklch(0.235 0.008 120); font: 600 11px/1.4 'Inter Variable', sans-serif; } .ds-terminal header small { color: oklch(0.7 0.012 120); } .ds-status { width: 7px; height: 7px; border-radius: 50%; background: oklch(0.72 0.14 145); } .ds-terminal pre { min-height: 110px; margin: 0; padding: 13px; font: 400 13px/1.45 'JetBrains Mono Variable', monospace; white-space: pre-wrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Operator's Bench",
+    "overview": "AgentDock feels like the desk of a developer who switches between focused daytime work and long evening terminal sessions: the surface stays neutral, the tools are exactly where muscle memory expects them, and only live system state asks for attention. White and near-black carry the product; muted olive behaves like a controlled instrument lamp, never like decoration. The system is compact without becoming cramped. Borders and tonal shifts explain structure, while labels, paths, timestamps, and terminal text form a disciplined information hierarchy.",
+    "keyCharacteristics": [
+      "Pure white and near-black canvases with one restrained olive signal.",
+      "Flat, border-led grouping with dense but readable developer-tool rhythm.",
+      "Inter for interface language and JetBrains Mono for paths, commands, and terminal output.",
+      "Familiar side navigation, session tabs, dialogs, fields, and visible focus states.",
+      "Responsive structure that collapses navigation and simplifies toolbars instead of shrinking text."
+    ],
+    "rules": [
+      {
+        "name": "The Instrument Lamp Rule",
+        "body": "Olive is a state signal, not decoration; if it appears in a background flourish or large inactive surface, the screen is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Canvases Rule",
+        "body": "Light mode starts from literal white and dark mode from chroma-free near-black. Never warm either canvas into cream, beige, navy, or purple.",
+        "section": "colors"
+      },
+      {
+        "name": "The Executable Content Rule",
+        "body": "Mono identifies something the machine reads or runs. Buttons, navigation, headings, and explanatory prose always remain in Inter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Workbench Rule",
+        "body": "If a resting container needs a shadow to be understood, repair its hierarchy, spacing, or surface tone instead.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep primary actions achromatic and reserve olive for focus, selection, readiness, and the active session rule.",
+      "Do keep body text at or above WCAG 2.2 AA contrast in both themes and provide non-color state labels.",
+      "Do use standard sidebars, tabs, dialogs, switches, and fields so the interface disappears into the developer's task.",
+      "Do simplify toolbars, collapse the sidebar, and preserve touch targets on narrow screens.",
+      "Do show YOLO scope, container status, background apt maintenance, empty states, errors, and stopped sessions honestly."
+    ],
+    "donts": [
+      "Don't use purple or neon gradients, decorative glassmorphism, or the generic AI product visual language named in PRODUCT.md.",
+      "Don't use excessive rounding, nested cards, fake terminal scenery, or borders combined with broad decorative shadows.",
+      "Don't hide project settings, Agent selection, or runtime state behind novel gestures or hover-only controls.",
+      "Don't use cream, beige, navy, or tinted-black canvases; the product is explicitly white or chroma-free near-black.",
+      "Don't animate decoration. Motion exists only for state transition, feedback, responsive navigation, modal entry, and loading."
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Update AgentDock WSL packages in the background
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/agentdock/apt-update
+Nice=10
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

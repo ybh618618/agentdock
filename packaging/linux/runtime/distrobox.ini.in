@@ -1,0 +1,15 @@
+[agentdock-ubuntu]
+image="@IMAGE@"
+home="@RUNTIME_HOME@"
+additional_packages="ca-certificates curl git gnupg sudo procps util-linux build-essential unzip xz-utils"
+additional_flags="--label io.agentdock.managed=true"
+volume="@BOOTSTRAP_ROOT@:/opt/agentdock-bootstrap:ro"
+volume="@AGENTDOCK_BINARY@:/opt/agentdock-bootstrap/agentdock:ro"
+volume="@RUNTIME_CONFIG@:/opt/agentdock-user-config:ro"
+init_hooks="/opt/agentdock-bootstrap/runtime/container-start.sh"
+init=false
+nvidia=false
+pull=false
+root=false
+entry=false
+start_now=false

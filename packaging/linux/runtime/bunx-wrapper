@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -eu
+
+if [ -x /opt/agentdock-bootstrap/agentdock ]; then
+  agentdock_binary=/opt/agentdock-bootstrap/agentdock
+elif [ -x /usr/lib/agentdock/agentdock ]; then
+  agentdock_binary=/usr/lib/agentdock/agentdock
+else
+  echo "AgentDock executable is unavailable" >&2
+  exit 127
+fi
+
+BUN_BE_BUN=1 exec "$agentdock_binary" x "$@"

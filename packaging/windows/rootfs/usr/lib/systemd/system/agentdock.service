@@ -1,0 +1,27 @@
+[Unit]
+Description=AgentDock local dashboard and agent runtime
+After=network.target
+
+[Service]
+Type=simple
+User=agentdock
+Group=agentdock
+ExecStart=/usr/lib/agentdock/agentdock serve --platform=wsl
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=20s
+KillSignal=SIGTERM
+UMask=0077
+RuntimeDirectory=agentdock
+RuntimeDirectoryMode=0750
+Environment=HOME=/home/agentdock
+Environment=XDG_CONFIG_HOME=/home/agentdock/.config
+Environment=XDG_DATA_HOME=/home/agentdock/.local/share
+Environment=XDG_CACHE_HOME=/home/agentdock/.cache
+Environment=XDG_RUNTIME_DIR=/run/agentdock
+Environment=AGENTDOCK_PACKAGED=1
+Environment=AGENTDOCK_RUNTIME_KIND=wsl
+EnvironmentFile=-/home/agentdock/.config/agentdock/environment
+
+[Install]
+WantedBy=multi-user.target

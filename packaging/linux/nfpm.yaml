@@ -1,0 +1,80 @@
+name: agentdock
+arch: "${ARCH}"
+platform: linux
+version: "${VERSION}"
+release: "1"
+section: devel
+priority: optional
+maintainer: "${AGENTDOCK_MAINTAINER}"
+description: |-
+  A local-first dashboard and unified runtime for coding agents.
+  AgentDock provisions its Ubuntu runtime with rootless Podman and Distrobox
+  during onboarding; no container image is embedded in this package.
+vendor: AgentDock
+homepage: "${AGENTDOCK_HOMEPAGE}"
+license: "${AGENTDOCK_LICENSE}"
+
+contents:
+  - src: "${BINARY}"
+    dst: /usr/lib/agentdock/agentdock
+    expand: true
+    file_info:
+      mode: 0755
+  - src: /usr/lib/agentdock/agentdock
+    dst: /usr/bin/agentdock
+    type: symlink
+  - src: ./agentdock.service
+    dst: /usr/lib/systemd/user/agentdock.service
+    file_info:
+      mode: 0644
+  - src: ./agentdock.desktop
+    dst: /usr/share/applications/agentdock.desktop
+    file_info:
+      mode: 0644
+  - src: ./runtime/
+    dst: /usr/lib/agentdock/runtime
+    type: tree
+  - src: "${DASHBOARD_DIST}"
+    dst: /usr/lib/agentdock/dashboard
+    type: tree
+    expand: true
+  - src: ../../assets/agentdock.svg
+    dst: /usr/share/icons/hicolor/scalable/apps/agentdock.svg
+    file_info:
+      mode: 0644
+
+scripts:
+  postinstall: ./scripts/postinstall.sh
+  postremove: ./scripts/postremove.sh
+
+overrides:
+  deb:
+    depends:
+      - podman
+      - distrobox
+      - systemd
+      - xdg-utils
+  rpm:
+    depends:
+      - podman
+      - distrobox
+      - systemd
+      - xdg-utils
+  archlinux:
+    depends:
+      - podman
+      - distrobox
+      - systemd
+      - xdg-utils
+
+deb:
+  compression: zstd
+
+rpm:
+  compression: zstd
+  group: Development/Tools
+  summary: Local-first dashboard and unified runtime for coding agents
+
+archlinux:
+  pkgbase: agentdock
+  packager: "${AGENTDOCK_MAINTAINER}"

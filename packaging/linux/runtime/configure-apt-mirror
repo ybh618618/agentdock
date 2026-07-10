@@ -1,0 +1,67 @@
+#!/bin/sh
+
+set -eu
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "configure-apt-mirror must run as root" >&2
+  exit 77
+fi
+
+if [ "$#" -ne 1 ]; then
+  echo "usage: configure-apt-mirror URL|--restore" >&2
+  exit 64
+fi
+
+mirror="${1%/}"
+if [ "$mirror" = "--restore" ]; then
+  rm -f /etc/apt/sources.list.d/agentdock.sources
+  if [ -e /etc/apt/sources.list.agentdock-original ] && \
+     [ ! -e /etc/apt/sources.list ]; then
+    mv /etc/apt/sources.list.agentdock-original /etc/apt/sources.list
+  fi
+  if [ -e /etc/apt/sources.list.d/ubuntu.sources.agentdock-original ] && \
+     [ ! -e /etc/apt/sources.list.d/ubuntu.sources ]; then
+    mv \
+      /etc/apt/sources.list.d/ubuntu.sources.agentdock-original \
+      /etc/apt/sources.list.d/ubuntu.sources
+  fi
+  exit 0
+fi
+
+case "$mirror" in
+  http://*|https://*) ;;
+  *)
+    echo "APT mirror must use HTTP or HTTPS" >&2
+    exit 64
+    ;;
+esac
+case "$mirror" in
+  *[!A-Za-z0-9._~:/-]*)
+    echo "APT mirror contains unsupported characters" >&2
+    exit 64
+    ;;
+esac
+
+# shellcheck disable=SC1091
+. /etc/os-release
+codename="${VERSION_CODENAME:?Ubuntu VERSION_CODENAME is unavailable}"
+
+if [ -e /etc/apt/sources.list ] && \
+   [ ! -e /etc/apt/sources.list.agentdock-original ]; then
+  mv /etc/apt/sources.list /etc/apt/sources.list.agentdock-original
+fi
+if [ -e /etc/apt/sources.list.d/ubuntu.sources ] && \
+   [ ! -e /etc/apt/sources.list.d/ubuntu.sources.agentdock-original ]; then
+  mv \
+    /etc/apt/sources.list.d/ubuntu.sources \
+    /etc/apt/sources.list.d/ubuntu.sources.agentdock-original
+fi
+
+cat > /etc/apt/sources.list.d/agentdock.sources <<EOF
+Types: deb
+URIs: $mirror
+Suites: $codename $codename-updates $codename-backports $codename-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+chmod 0644 /etc/apt/sources.list.d/agentdock.sources

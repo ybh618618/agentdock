@@ -1,0 +1,20 @@
+[Unit]
+Description=AgentDock local dashboard and agent runtime
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/agentdock/agentdock serve --platform=linux
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=20s
+KillSignal=SIGTERM
+UMask=0077
+RuntimeDirectory=agentdock
+RuntimeDirectoryMode=0700
+Environment=AGENTDOCK_PACKAGED=1
+Environment=AGENTDOCK_RUNTIME_KIND=distrobox
+EnvironmentFile=-%h/.config/agentdock/environment
+
+[Install]
+WantedBy=default.target

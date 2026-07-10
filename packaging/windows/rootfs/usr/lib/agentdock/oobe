@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+install -d -m 0700 -o agentdock -g agentdock \
+  /home/agentdock/.config \
+  /home/agentdock/.local \
+  /home/agentdock/.local/share \
+  /home/agentdock/.cache \
+  /home/agentdock/.config/agentdock \
+  /home/agentdock/.local/share/agentdock \
+  /home/agentdock/.cache/agentdock
+
+systemctl daemon-reload >/dev/null 2>&1 || true
+systemctl enable agentdock.service >/dev/null 2>&1 || true
+
+# The default login shell opens the browser after OOBE returns. Keeping OOBE
+# non-interactive also makes repeated automated installation tests deterministic.
+exit 0

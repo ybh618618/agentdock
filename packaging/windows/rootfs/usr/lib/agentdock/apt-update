@@ -1,0 +1,45 @@
+#!/bin/sh
+
+set -u
+
+install -d -m 0755 -o agentdock -g agentdock /var/lib/agentdock
+install -d -m 0755 /var/log/agentdock
+
+state_file=/var/lib/agentdock/apt-update.json
+log_file=/var/log/agentdock/apt-update.log
+started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+touch "$log_file"
+chown root:agentdock "$log_file"
+chmod 0640 "$log_file"
+
+printf '{"state":"running","startedAt":"%s"}\n' "$started_at" > "$state_file"
+chown agentdock:agentdock "$state_file"
+chmod 0644 "$state_file"
+
+exec 8>/run/lock/agentdock-maintenance-worker.lock
+if ! /usr/bin/flock -n 8; then
+  exit 0
+fi
+
+if /usr/bin/flock -w 1800 /run/lock/agentdock-apt.lock \
+    /usr/bin/env DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a \
+    /usr/bin/apt-get --error-on=any update >> "$log_file" 2>&1 && \
+  /usr/bin/flock -w 1800 /run/lock/agentdock-apt.lock \
+    /usr/bin/env DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a \
+    /usr/bin/apt-get --with-new-pkgs -y upgrade >> "$log_file" 2>&1; then
+  finished_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  printf '{"state":"succeeded","startedAt":"%s","finishedAt":"%s"}\n' \
+    "$started_at" "$finished_at" > "$state_file"
+  chown agentdock:agentdock "$state_file"
+  exit 0
+fi
+
+exit_code="$?"
+finished_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+printf '{"state":"failed","startedAt":"%s","finishedAt":"%s","exitCode":%s}\n' \
+  "$started_at" "$finished_at" "$exit_code" > "$state_file"
+chown agentdock:agentdock "$state_file"
+
+# Network failures are visible in the Dashboard but must not make WSL boot fail.
+exit 0

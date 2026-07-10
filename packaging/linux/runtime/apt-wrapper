@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -eu
+
+if [ "$(id -u)" -eq 0 ]; then
+  exec /usr/bin/flock -w 900 /run/lock/agentdock-apt.lock \
+    /usr/bin/env DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a \
+    /usr/bin/apt "$@"
+fi
+
+# Distrobox configures its integrated user for non-interactive privilege
+# escalation. Skills and users invoke `apt`, never `sudo apt`.
+exec /usr/bin/sudo -n \
+  /usr/bin/flock -w 900 /run/lock/agentdock-apt.lock \
+  /usr/bin/env DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a \
+  /usr/bin/apt "$@"
