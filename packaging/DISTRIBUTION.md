@@ -1,6 +1,6 @@
 # AgentDock 分发与运行时方案
 
-> 状态：可实施的基线方案，2026-07-10。下面的脚本是初始骨架，等应用入口稳定后在 CI 中接入。
+> 状态：已接入 GitHub Actions 的 amd64 基线方案，2026-07-10。
 
 ## 1. 结论
 
@@ -175,14 +175,15 @@ wsl.exe --unregister AgentDock
 
 nFPM 官方支持 `deb`、`rpm` 和 `archlinux` packager，且可在同一份 YAML 里为各包格式覆盖依赖：[nFPM quick start](https://nfpm.goreleaser.com/docs/quick-start/)、[nFPM configuration](https://nfpm.goreleaser.com/docs/configuration/)。
 
-建议的发布 job：
+当前 CI 发布 job：
 
-1. 锁定 Bun 与 nFPM 版本，不在 release job 用 `latest`。
-2. 构建可执行文件：amd64 baseline、arm64。
-3. 运行 unit/integration test，再用 `packaging/linux/build.sh` 产出三种 Linux 包。
-4. 在 Ubuntu、Fedora、Arch 全新 VM 实装，验证 desktop file、user service、rootless Podman preflight 和首启拉取；用 `desktop-file-validate` 校验桌面入口。
-5. 在与目标架构相同的 Linux runner 用 `packaging/windows/build-wsl.sh` 生成 `.wsl`。在 Windows runner 上执行 `wsl --install --from-file ...`，验证 Start 菜单、OOBE、systemd 服务、localhost 和默认浏览器。
-6. 对 Linux 包做仓库签名，对 `.wsl` 发布 SHA-256 与 Sigstore/GitHub artifact attestation；输出 SBOM。
+1. 锁定 Bun 1.3.14 与 nFPM 2.47.0，不在 release job 使用 `latest`。
+2. 每次 push 在 amd64 baseline 目标构建可执行文件、三种 Linux 包和 Windows `.wsl`。
+3. 验证 Debian、RPM、Arch 包结构以及全部发布文件的 SHA-256，再保存 14 天的 Actions artifact。
+4. `v*` 标签必须与 `package.json` 版本一致；验证成功后自动创建 GitHub Release 并上传同一批已检查产物。
+
+后续发布硬化仍包括：arm64 构建；在 Ubuntu、Fedora、Arch 与 Windows 的全新 VM
+中做真实安装测试；包签名、GitHub artifact attestation 与 SBOM。
 
 ## 9. 发布前必须完成的接口
 
